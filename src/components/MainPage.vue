@@ -1,9 +1,9 @@
 <template>
   <div class="main-page">
     <header>
-      <h1>Main</h1>
-      <button class="connect">Connect</button>
-      <button class="create">Create</button>
+      <h1>Main Page</h1>
+      <ConnectWallet />
+      <button @click="create">Create</button>
     </header>
     <section class="opened">
       <h2>Opened</h2>
@@ -18,12 +18,14 @@
 </template>
 
 <script>
+import ConnectWallet from './ConnectWallet.vue'
+
 export default {
   name: 'MainPage',
+  components: {
+    ConnectWallet
+  },
   methods: {
-    connect() {
-      console.log('Connect button clicked')
-    },
     create() {
       console.log('Create button clicked')
     }
@@ -44,7 +46,7 @@ header {
   align-items: center;
 }
 
-.connect, .create {
+button {
   background-color: #4caf50;
   color: white;
   border: none;
