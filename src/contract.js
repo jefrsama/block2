@@ -13,7 +13,7 @@ const abiPath = path.resolve("./abi.json");
 const rawData = fs.readFileSync(abiPath);  
 const contractAbi = JSON.parse(rawData).abi
 
-const contractAddress = '0x6E0d93C0B434F0F45f80fD1132dBD735E39CaaDC';
+const contractAddress = '0xe4aFA9e78ec3225b012FAB9a6411f4e42A7aa6fA';
 
 const voteChainContract = new ethers.Contract(contractAddress, contractAbi, wallet);
 
@@ -27,8 +27,6 @@ async function createBallot() {
     const rewardAmount = ethers.parseEther("0.1"); 
 
     try {
-        
-
         const tx = await voteChainContract.createBallot(question, options, startTime, duration, rewardAmount, {
             value: rewardAmount
         });
