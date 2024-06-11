@@ -18,8 +18,14 @@ export default {
     async createNewBallot() {
       await contractFunctions.createBallot();
     },
-    async castVote(ballotIndex, optionIndex) {
-      await contractFunctions.vote(ballotIndex, optionIndex);
+    async getActiveBallotsWithPagination() {
+      let some = await contractFunctions.getActiveBallotsCount();
+      let pageSize = 5;
+      if (some <= pageSize) {
+          pageSize = some;
+          console.log(pageSize)
+      }
+      await contractFunctions.getActiveBallotsWithPagination(1, pageSize);
     },
     async fetchActiveBallotsCount() {
       try {
@@ -30,7 +36,7 @@ export default {
     }
   },
   async mounted() {
-    await this.fetchActiveBallotsCount();
+    await this.getActiveBallotsWithPagination();
   }
 }
 </script>

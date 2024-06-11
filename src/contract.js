@@ -74,7 +74,7 @@ async function getUserVotingHistory(userAddress) {
 
 async function getActiveBallotsCount() {
     const counts = await voteChainContract.getActiveBallotsCount();
-    console.log('counts:', counts);
+    return counts;
 }
 
 // Exporting the functions
