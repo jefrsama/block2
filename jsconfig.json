@@ -5,9 +5,10 @@
     "baseUrl": "./",
     "moduleResolution": "node",
     "paths": {
-      "@/*": [
-        "src/*"
-      ]
+      "src/*": ["src/*"],
+      "node/*": ["node_modules/*"],
+      "assets/*": ["src/assets/*"],
+      "pages/*": ["src/pages/*"]
     },
     "lib": [
       "esnext",

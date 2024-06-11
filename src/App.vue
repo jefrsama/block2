@@ -10,10 +10,29 @@
 </template>
 
 <script>
-export default {
-  name: 'App'
-}
+import contractFunctions from './contract';
 
+export default {
+  name: 'App',
+  methods: {
+    async createNewBallot() {
+      await contractFunctions.createBallot();
+    },
+    async castVote(ballotIndex, optionIndex) {
+      await contractFunctions.vote(ballotIndex, optionIndex);
+    },
+    async fetchActiveBallotsCount() {
+      try {
+        await contractFunctions.getActiveBallotsCount();
+      } catch (error) {
+        console.error('Error fetching active ballots count:', error);
+      }
+    }
+  },
+  async mounted() {
+    await this.fetchActiveBallotsCount();
+  }
+}
 </script>
 
 <style>
