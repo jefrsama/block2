@@ -58,6 +58,7 @@ async function distributeRewards(ballotIndex) {
 async function getWinner(ballotIndex) {
     const [winnerIndex, winningVotes] = await voteChainContract.getWinner(ballotIndex);
     console.log(`Winner Index: ${winnerIndex}, Winning Votes: ${winningVotes}`);
+    return [winnerIndex, winningVotes];
 }
 
 async function getActiveBallotsWithPagination(page, pageSize) {

@@ -11,11 +11,14 @@
           class="question-card"
           v-for="(ballot, index) in ballots"
           :key="index"
-          @click="goToQuestion(index)"
       >
-        <h3>{{ ballot[0] }}</h3>
-<!--        <p>Start Time: {{ new Date(ballot[2] * 1000).toLocaleString() }}</p>-->
-        <p>Duration: {{ ballot[3] }} seconds</p>
+        <h3>{{ ballot.question }}</h3>
+        <p>Start Time: {{ new Date(parseInt(ballot.startTime) * 1000).toLocaleString() }}</p>
+        <p>End Time: {{ new Date((parseInt(ballot.startTime) + parseInt(ballot.duration)) * 1000).toLocaleString() }}</p>
+        <p>Reward Amount: {{ ballot.rewardAmount }} wei</p>
+        <p>Total Votes: {{ ballot.totalVotes }}</p>
+        <p>Creator: {{ ballot.creator }}</p>
+
         <span class="status">🟢</span>
       </div>
     </section>
@@ -34,29 +37,52 @@ export default {
     return{
       ballots: []
     }
-    
+
   },
   methods: {
     create() {
       console.log('Create button clicked')
     },
     async getActiveBallotsWithPagination() {
-      let some = await contractFunctions.getActiveBallotsCount();
-      let pageSize = 5;
-      if (some <= pageSize) {
-          pageSize = some;
-          console.log("Hello")
+      try {
+        let count = await contractFunctions.getActiveBallotsCount();
+        let pageSize = count <= 5 ? count : 5;
+        let ballots = await contractFunctions.getActiveBallotsWithPagination(0, pageSize);
+        this.ballots = ballots.map(ballot => ({
+          question: ballot[0],
+          options: ballot[1],
+          startTime: ballot[2],
+          duration: ballot[3],
+          rewardAmount: ballot[4].toString(),
+          totalVotes: ballot[5].toString(),
+          creator: ballot[6],
+          voters: ballot[7]
+        }));
+
+        let win = await contractFunctions.getWinner(4)
+        console.log(win);
+
+      } catch (error) {
+        console.error('Error loading ballots:', error);
       }
-      this.ballots = await contractFunctions.getActiveBallotsWithPagination(0, pageSize);
-      // console.log(ballots)
-      // for(let i=0;i<pageSize;i++){
-      //   console.log(ballots[i])
-      //   for(let j=0;j<5;j++){
-      //     console.log(ballots[i][j])
-      //   }
-      // }
-    }
- 
+    },
+    // async getActiveBallotsWithPagination() {
+    //   let some = await contractFunctions.getActiveBallotsCount();
+    //   let pageSize = 5;
+    //   if (some <= pageSize) {
+    //       pageSize = some;
+    //       console.log("Hello")
+    //   }
+    //   this.ballots = await contractFunctions.getActiveBallotsWithPagination(0, pageSize);
+    //   // console.log(ballots)
+    //   // for(let i=0;i<pageSize;i++){
+    //   //   console.log(ballots[i])
+    //   //   for(let j=0;j<5;j++){
+    //   //     console.log(ballots[i][j])
+    //   //   }
+    //   // }
+    // }
+
   } ,async mounted() {
     await this.getActiveBallotsWithPagination();
   }
