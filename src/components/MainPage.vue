@@ -18,7 +18,10 @@
         <p>Reward Amount: {{ ballot.rewardAmount }} wei</p>
         <p>Total Votes: {{ ballot.totalVotes }}</p>
         <p>Creator: {{ ballot.creator }}</p>
-
+        <div v-if="ballot.winner && ballot.winner.votes != 0">
+          <p>Winning Option: {{ ballot.options[ballot.winner.index] }}</p>
+          <p>Winning Votes: {{ ballot.winner.votes }}</p>
+        </div>
         <span class="status">🟢</span>
       </div>
     </section>
@@ -26,68 +29,59 @@
 </template>
 
 <script>
-import ConnectWallet from './ConnectWallet.vue'
+import ConnectWallet from './ConnectWallet.vue';
 import contractFunctions from '../contract';
+
 export default {
   name: 'MainPage',
   components: {
-    ConnectWallet
+    ConnectWallet,
   },
-  data (){
-    return{
-      ballots: []
-    }
-
+  data() {
+    return {
+      ballots: [],
+    };
   },
   methods: {
     create() {
-      console.log('Create button clicked')
+      console.log('Create button clicked');
     },
     async getActiveBallotsWithPagination() {
       try {
         let count = await contractFunctions.getActiveBallotsCount();
         let pageSize = count <= 5 ? count : 5;
         let ballots = await contractFunctions.getActiveBallotsWithPagination(0, pageSize);
-        this.ballots = ballots.map(ballot => ({
-          question: ballot[0],
-          options: ballot[1],
-          startTime: ballot[2],
-          duration: ballot[3],
-          rewardAmount: ballot[4].toString(),
-          totalVotes: ballot[5].toString(),
-          creator: ballot[6],
-          voters: ballot[7]
-        }));
-
-        let win = await contractFunctions.getWinner(4)
-        console.log(win);
+        
+        // Fetch winner for each ballot
+        this.ballots = await Promise.all(
+          ballots.map(async (ballot, index) => {
+            const [winnerIndex, winningVotes] = await contractFunctions.getWinner(index+1);
+            return {
+              question: ballot[0],
+              options: ballot[1],
+              startTime: ballot[2],
+              duration: ballot[3],
+              rewardAmount: ballot[4].toString(),
+              totalVotes: ballot[5].toString(),
+              creator: ballot[6],
+              voters: ballot[7],
+              winner: {
+                index: winnerIndex,
+                votes: winningVotes.toString(),
+              },
+            };
+          })
+        );
 
       } catch (error) {
         console.error('Error loading ballots:', error);
       }
     },
-    // async getActiveBallotsWithPagination() {
-    //   let some = await contractFunctions.getActiveBallotsCount();
-    //   let pageSize = 5;
-    //   if (some <= pageSize) {
-    //       pageSize = some;
-    //       console.log("Hello")
-    //   }
-    //   this.ballots = await contractFunctions.getActiveBallotsWithPagination(0, pageSize);
-    //   // console.log(ballots)
-    //   // for(let i=0;i<pageSize;i++){
-    //   //   console.log(ballots[i])
-    //   //   for(let j=0;j<5;j++){
-    //   //     console.log(ballots[i][j])
-    //   //   }
-    //   // }
-    // }
-
-  } ,async mounted() {
+  },
+  async mounted() {
     await this.getActiveBallotsWithPagination();
-  }
-
-}
+  },
+};
 </script>
 
 <style scoped>
@@ -126,8 +120,7 @@ button {
   margin: 10px 0;
   border-radius: 5px;
   display: flex;
-  justify-content: space-between;
-  align-items: center;
+  flex-direction: column;
 }
 
 .status {
