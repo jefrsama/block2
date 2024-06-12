@@ -63,8 +63,7 @@ async function getWinner(ballotIndex) {
 async function getActiveBallotsWithPagination(page, pageSize) {
     
         let result = await voteChainContract.getActiveBallotsWithPagination(page, pageSize);
-        result = JSON.parse(JSON.stringify(result))
-        console.log(result);
+        return result;
 
 }
 
@@ -76,7 +75,7 @@ async function getUserVotingHistory(userAddress) {
 async function getActiveBallotsCount() {
     const counts = await voteChainContract.getActiveBallotsCount();
     console.log(counts)
-    return counts;
+    return parseInt(counts);
 }
 
 // Exporting the functions

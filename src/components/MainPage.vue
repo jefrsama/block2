@@ -7,10 +7,15 @@
     </header>
     <section class="opened">
       <h2>Opened</h2>
-      <div class="question-card" v-for="i in 4" :key="i">
-        <h3>Question</h3>
-        <p>0x000005</p>
-        <p>24.02.2024 15:00 - 26.02.2024 16:00</p>
+      <div
+          class="question-card"
+          v-for="(ballot, index) in ballots"
+          :key="index"
+          @click="goToQuestion(index)"
+      >
+        <h3>{{ ballot[0] }}</h3>
+<!--        <p>Start Time: {{ new Date(ballot[2] * 1000).toLocaleString() }}</p>-->
+        <p>Duration: {{ ballot[3] }} seconds</p>
         <span class="status">🟢</span>
       </div>
     </section>
@@ -19,17 +24,43 @@
 
 <script>
 import ConnectWallet from './ConnectWallet.vue'
-
+import contractFunctions from '../contract';
 export default {
   name: 'MainPage',
   components: {
     ConnectWallet
   },
+  data (){
+    return{
+      ballots: []
+    }
+    
+  },
   methods: {
     create() {
       console.log('Create button clicked')
+    },
+    async getActiveBallotsWithPagination() {
+      let some = await contractFunctions.getActiveBallotsCount();
+      let pageSize = 5;
+      if (some <= pageSize) {
+          pageSize = some;
+          console.log("Hello")
+      }
+      this.ballots = await contractFunctions.getActiveBallotsWithPagination(0, pageSize);
+      // console.log(ballots)
+      // for(let i=0;i<pageSize;i++){
+      //   console.log(ballots[i])
+      //   for(let j=0;j<5;j++){
+      //     console.log(ballots[i][j])
+      //   }
+      // }
     }
+ 
+  } ,async mounted() {
+    await this.getActiveBallotsWithPagination();
   }
+
 }
 </script>
 

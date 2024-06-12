@@ -19,13 +19,13 @@ export default {
       await contractFunctions.createBallot();
     },
     async getActiveBallotsWithPagination() {
-      await contractFunctions.getActiveBallotsCount();
-      // let pageSize = 5;
-      // if (some <= pageSize) {
-      //     pageSize = parseInt(some);
-      //     console.log("Hello")
-      // }
-      // await contractFunctions.getActiveBallotsWithPagination(0, pageSize);
+      let some = await contractFunctions.getActiveBallotsCount();
+      let pageSize = 5;
+      if (some <= pageSize) {
+          pageSize = some;
+          // console.log("Hello")
+      }
+      await contractFunctions.getActiveBallotsWithPagination(0, pageSize);
      
     },
     async fetchActiveBallotsCount() {
@@ -36,9 +36,7 @@ export default {
       }
     }
   },
-  async mounted() {
-    await this.getActiveBallotsWithPagination();
-  }
+  
 }
 </script>
 
