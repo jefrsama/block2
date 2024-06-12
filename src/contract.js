@@ -13,13 +13,11 @@ const contractAddress = '0xe4aFA9e78ec3225b012FAB9a6411f4e42A7aa6fA';
 
 const voteChainContract = new ethers.Contract(contractAddress, contractAbi, wallet);
 
-async function createBallot() {
-    const question = "What is your favorite color?";
-    const options = ["Red", "Blue", "Green"];
-    const currentTime = Math.floor(Date.now() / 1000);
-    const startTime = currentTime + 120;
-    const duration = 3600;
-    const rewardAmount = ethers.parseEther("0.1");
+async function createBallot(question, options, from, to, reward) {
+    const startTime = Math.floor(new Date(from).getTime() / 1000);
+    const endTime = Math.floor(new Date(to).getTime() / 1000);
+    const duration = endTime - startTime;
+    const rewardAmount = ethers.utils.parseEther(reward);
 
     try {
         const tx = await voteChainContract.createBallot(question, options, startTime, duration, rewardAmount, {
@@ -63,8 +61,11 @@ async function getWinner(ballotIndex) {
 }
 
 async function getActiveBallotsWithPagination(page, pageSize) {
-    const ballots = await voteChainContract.getActiveBallotsWithPagination(page, pageSize);
-    console.log('Active Ballots:', ballots);
+    
+        let result = await voteChainContract.getActiveBallotsWithPagination(page, pageSize);
+        result = JSON.parse(JSON.stringify(result))
+        console.log(result);
+
 }
 
 async function getUserVotingHistory(userAddress) {
@@ -74,6 +75,7 @@ async function getUserVotingHistory(userAddress) {
 
 async function getActiveBallotsCount() {
     const counts = await voteChainContract.getActiveBallotsCount();
+    console.log(counts)
     return counts;
 }
 
