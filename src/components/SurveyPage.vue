@@ -77,7 +77,7 @@ export default {
   },
   methods: {
     initializeEthereum: async function() {
-        
+    
     },
     addOption: function() {
       if (this.option.trim() !== '') {
@@ -89,24 +89,17 @@ export default {
       this.options.splice(index, 1);
     },
     save: async function() {
-      // const infuraProjectId = '1ba057ea4d2c4ea8beecda48ac63b1a6';
-// const provider = new ethers.JsonRpcProvider(`https://sepolia.infura.io/v3/${infuraProjectId}`);
+      const infuraProjectId = '1ba057ea4d2c4ea8beecda48ac63b1a6';
+const provider = new ethers.JsonRpcProvider(`https://sepolia.infura.io/v3/${infuraProjectId}`);
 
-// const privateKey = '40423dd82129adebc5d45d474f9649e133730510a0cb40f64415978c9b641286';
-// const wallet = new ethers.Wallet(privateKey, provider);
+const privateKey = '40423dd82129adebc5d45d474f9649e133730510a0cb40f64415978c9b641286';
+const wallet = new ethers.Wallet(privateKey, provider);
 
 const contractAbi = abiData.abi[0];
 
 const contractAddress = '0xe4aFA9e78ec3225b012FAB9a6411f4e42A7aa6fA';
 
-let signer;
-try {
-  await window.ethereum.request({ method: 'eth_requestAccounts' });
-  signer = this.provider.getSigner();
-} catch{
-  console.error('User denied account access:');
-}
-const voteChainContract = new ethers.Contract(contractAddress, contractAbi, signer);
+const voteChainContract = new ethers.Contract(contractAddress, contractAbi, wallet);
       const startTime = Math.floor(new Date(this.from).getTime() / 1000);
       const endTime = Math.floor(new Date(this.to).getTime() / 1000);
       const duration = endTime - startTime;
